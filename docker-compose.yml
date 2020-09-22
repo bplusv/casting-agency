@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  webapp:
+    build:
+      context: ./app
+    ports:
+      - 5000:5000
+    environment:
+      FLASK_APP: app.py
+      FLASK_ENV: development
+      DATABASE_URL: postgres://postgres:pgpass@postgres:5432/postgres
+    command: flask run --host=0.0.0.0
+    volumes:
+      - ./app:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+  postgres:
+    image: postgres:12.4
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: pgpass
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -q -U postgres
+volumes:
+  postgres-data:
