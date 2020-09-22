@@ -4,5 +4,9 @@ setup:
 build:
   docker:
     web: ./app/Dockerfile
+release:
+  image: web
+  command:
+    - python manage.py db upgrade
 run:
   web: gunicorn --bind 0.0.0.0:$PORT app:app
