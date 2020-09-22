@@ -8,6 +8,7 @@ app = Flask(__name__)
 setup_db(app)
 CORS(app)
 
+
 @app.route('/')
 def index():
-  return 'hello world!'
+    return 'hello world!'
