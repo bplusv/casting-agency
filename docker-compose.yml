@@ -6,10 +6,8 @@ services:
     ports:
       - 5000:5000
     environment:
-      FLASK_APP: app.py
-      FLASK_ENV: development
       DATABASE_URL: postgres://postgres:pgpass@postgres:5432/postgres
-    command: flask run --host=0.0.0.0
+    command: development
     volumes:
       - ./app:/app
     depends_on:
@@ -25,5 +23,6 @@ services:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
       test: pg_isready -q -U postgres
+      interval: 3s
 volumes:
   postgres-data:

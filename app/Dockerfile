@@ -1,11 +1,11 @@
-FROM python:3.8.5-slim-buster
-
-COPY . /app
+FROM python:3.8.5-buster
 WORKDIR /app
 
-RUN pip install -r requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 RUN useradd -m appuser
 USER appuser
 
-CMD gunicorn --bind 0.0.0.0:$PORT app:app
+COPY --chown=appuser:appuser . .
+ENTRYPOINT ["/bin/bash", "entrypoint.sh"]
