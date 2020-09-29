@@ -1,7 +1,9 @@
 import os
 import enum
 
-from application import db
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
 
 
 class Gender(enum.Enum):
@@ -25,6 +27,22 @@ class Actor(db.Model):
     age = db.Column(db.Integer, nullable=False)
     gender = db.Column(db.Enum(Gender), nullable=False)
     movies = db.relationship('Movie', secondary=movie_actors_table, lazy=True)
+
+    def __init__(self, name, age, gender):
+        self.name = name
+        self.age = age
+        self.gender = gender
+
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def format(self):
+        return {
+            'name': self.name,
+            'age': self.age,
+            'gender': self.gender.name.lower()
+        }
 
 
 class Movie(db.Model):
