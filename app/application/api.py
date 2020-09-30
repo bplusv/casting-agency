@@ -10,3 +10,8 @@ bp = Blueprint('api', __name__, url_prefix='/api')
 def get_actors():
     actors = Actor.query.all()
     return jsonify([actor.format() for actor in actors])
+
+
+@bp.route('/movies', methods=['GET'])
+def get_movies():
+    return ''
