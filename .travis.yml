@@ -3,5 +3,5 @@ python:
   - "3.8.5"
 before_install: cd ./app
 script:
-  - pip install -r requirements.txt
   - flake8 --config=.flake8
+  - python -m pytest ./tests
