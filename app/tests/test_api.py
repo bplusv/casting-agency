@@ -1,6 +1,3 @@
-from application.models import Actor, Gender
-
-
 def test_get_actors(client):
     res = client.get('/api/actors')
     data = res.get_json()
