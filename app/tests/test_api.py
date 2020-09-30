@@ -7,3 +7,8 @@ def test_get_actors(client):
         assert 'name' in actor
         assert 'age' in actor
         assert 'gender' in actor
+
+
+def test_get_movies(client):
+    res = client.get('/api/movies')
+    assert res.status_code == 200
