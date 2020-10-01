@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-from application import create_app
-from application.models import db, Actor, Gender
+from src.main import create_app
+from src.models import db, Actor, Gender
 
 
 def seed_db():

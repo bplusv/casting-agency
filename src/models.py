@@ -2,6 +2,7 @@ import enum
 
 from flask_sqlalchemy import SQLAlchemy
 
+
 db = SQLAlchemy()
 
 
@@ -12,8 +13,10 @@ class Gender(enum.Enum):
 
 movie_actors_table = db.Table(
     'movie_actors',
-    db.Column('movie_id', db.Integer, db.ForeignKey('movies.id'), primary_key=True),
-    db.Column('actor_id', db.Integer, db.ForeignKey('actors.id'), primary_key=True),
+    db.Column('movie_id', db.Integer,
+              db.ForeignKey('movies.id'), primary_key=True),
+    db.Column('actor_id', db.Integer,
+              db.ForeignKey('actors.id'), primary_key=True),
 )
 
 

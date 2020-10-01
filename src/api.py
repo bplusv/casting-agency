@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
 
-from application.models import Actor
+from src.models import Actor
 
 
 bp = Blueprint('api', __name__, url_prefix='/api')
