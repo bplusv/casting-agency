@@ -36,6 +36,15 @@ class Actor(db.Model):
     def insert(self):
         db.session.add(self)
         db.session.commit()
+        return self
+
+    def update(self):
+        db.session.commit()
+        return self
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
     def format(self):
         return {
@@ -51,3 +60,26 @@ class Movie(db.Model):
     title = db.Column(db.String, nullable=False)
     release_date = db.Column(db.DateTime(timezone=True), nullable=False)
     actors = db.relationship('Actor', secondary=movie_actors_table, lazy=True)
+
+    def __init__(self, title, release_date):
+        self.title = title
+        self.release_date = release_date
+
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+        return self
+
+    def update(self):
+        db.session.commit()
+        return self
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def format(self):
+        return {
+            'title': self.title,
+            'release_date': self.release_date
+        }
