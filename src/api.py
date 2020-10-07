@@ -10,6 +10,11 @@ db = SQLAlchemy()
 bp = Blueprint('api', __name__, url_prefix='/api')
 
 
+@bp.route('/test', methods=['GET'])
+def get_test():
+    return 'hello test (master deploy only)'
+
+
 @bp.route('/actors', methods=['GET'])
 def get_actors():
     actors = Actor.query.all()
