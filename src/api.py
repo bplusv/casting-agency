@@ -12,7 +12,7 @@ bp = Blueprint('api', __name__, url_prefix='/api')
 
 @bp.route('/test', methods=['GET'])
 def get_test():
-    return 'hello test (master deploy only)'
+    return 'hello test (master deploy only) from test-branch'
 
 
 @bp.route('/actors', methods=['GET'])
