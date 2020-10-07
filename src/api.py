@@ -1,8 +1,12 @@
-from flask import Blueprint, jsonify, abort
+from datetime import date
 
-from src.models import Actor, Movie
+from flask_sqlalchemy import SQLAlchemy
+from flask import Blueprint, jsonify, abort, request
+
+from src.models import Actor, Gender, Movie
 
 
+db = SQLAlchemy()
 bp = Blueprint('api', __name__, url_prefix='/api')
 
 
@@ -25,6 +29,24 @@ def delete_actor(actor_id):
     })
 
 
+@bp.route('/actors', methods=['POST'])
+def post_actor():
+    post_data = request.get_json()
+    try:
+        actor = Actor(
+            post_data['name'],
+            post_data['age'],
+            Gender[post_data['gender'].upper()]
+        ).insert()
+        return jsonify({
+            'success': True,
+            'actor_id': actor.id
+        })
+    except Exception:
+        db.session.rollback()
+        abort(422)
+
+
 @bp.route('/movies', methods=['GET'])
 def get_movies():
     movies = Movie.query.all()
@@ -42,6 +64,23 @@ def delete_movie(movie_id):
     return jsonify({
         'success': True
     })
+
+
+@bp.route('/movies', methods=['POST'])
+def post_movie():
+    post_data = request.get_json()
+    try:
+        movie = Movie(
+            post_data['title'],
+            date.fromisoformat(post_data['release_date'])
+        ).insert()
+        return jsonify({
+            'success': True,
+            'movie_id': movie.id
+        })
+    except Exception:
+        db.session.rollback()
+        abort(422)
 
 
 @bp.errorhandler(400)

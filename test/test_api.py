@@ -50,6 +50,40 @@ def test_delete_actor_not_found(client):
     assert data['message'] == 'Entity not found'
 
 
+def test_post_actor(client):
+    post_data = {
+        'name': 'Lisa Mcdowell',
+        'age': 70,
+        'gender': 'female'
+    }
+    res = client.post('/api/actors', json=post_data)
+    data = res.get_json()
+    assert res.status_code == 200
+    assert isinstance(data, dict)
+    assert data['success'] is True
+    assert 'actor_id' in data
+    actor = Actor.query.get(data['actor_id'])
+    assert actor is not None
+    assert actor.name == post_data['name']
+    assert actor.age == post_data['age']
+    assert actor.gender.name.lower() == post_data['gender']
+
+
+def test_post_actor_unprocessable(client):
+    post_data = {
+        'name': 'Angela Rubius',
+        'age': None,
+        'gender': None
+    }
+    res = client.post('/api/actors', json=post_data)
+    data = res.get_json()
+    assert res.status_code == 422
+    assert isinstance(data, dict)
+    assert data['success'] is False
+    assert data['error'] == 422
+    assert data['message'] == 'Unprocessable entity'
+
+
 def test_get_movies(client):
     res = client.get('/api/movies')
     data = res.get_json()
@@ -91,3 +125,34 @@ def test_delete_movie_not_found(client):
     assert data['success'] is False
     assert data['error'] == 404
     assert data['message'] == 'Entity not found'
+
+
+def test_post_movie(client):
+    post_data = {
+        'title': 'blue ocean',
+        'release_date': '1998-05-21'
+    }
+    res = client.post('/api/movies', json=post_data)
+    data = res.get_json()
+    assert res.status_code == 200
+    assert isinstance(data, dict)
+    assert data['success'] is True
+    assert 'movie_id' in data
+    movie = Movie.query.get(data['movie_id'])
+    assert movie is not None
+    assert movie.title == post_data['title']
+    assert movie.release_date.date().isoformat() == post_data['release_date']
+
+
+def test_post_movie_unprocessable(client):
+    post_data = {
+        'title': 'another world 2',
+        'release_date': None
+    }
+    res = client.post('/api/movies', json=post_data)
+    data = res.get_json()
+    assert res.status_code == 422
+    assert isinstance(data, dict)
+    assert data['success'] is False
+    assert data['error'] == 422
+    assert data['message'] == 'Unprocessable entity'
