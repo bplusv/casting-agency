@@ -15,7 +15,7 @@ services:
       - postgres
     restart: always
   postgres:
-    image: postgres:12.4
+    image: postgres:12.4-alpine
     environment:
       POSTGRES_PASSWORD: pgpass
     volumes:
