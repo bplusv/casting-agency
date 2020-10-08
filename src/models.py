@@ -50,7 +50,8 @@ class Actor(db.Model):
         return {
             'name': self.name,
             'age': self.age,
-            'gender': self.gender.name.lower()
+            'gender': self.gender.name.lower(),
+            'movies': [movie.id for movie in self.movies]
         }
 
 
@@ -81,5 +82,6 @@ class Movie(db.Model):
     def format(self):
         return {
             'title': self.title,
-            'release_date': self.release_date
+            'release_date': self.release_date,
+            'actors': [actor.id for actor in self.actors]
         }

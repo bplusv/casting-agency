@@ -8,12 +8,10 @@ from src.models import db, Actor, Gender, Movie
 
 
 def seed_db():
-    actor1 = Actor('Joe Gainwell', 23, Gender.MALE).insert()
-    actor2 = Actor('Michelle Ortega', 19, Gender.FEMALE).insert()
-    movie1 = Movie('Back to the future 4',
-                   date.fromisoformat('2021-04-01')).insert()
-    movie1.actors = [actor1, actor2]
-    movie1.update()
+    Actor('Joe Gainwell', 23, Gender.MALE).insert()
+    Actor('Michelle Ortega', 19, Gender.FEMALE).insert()
+    Movie('Back to the future 4', date.fromisoformat('2021-04-01')).insert()
+    Movie('A new bright sunshine', date.fromisoformat('2022-09-01')).insert()
 
 
 @pytest.fixture
