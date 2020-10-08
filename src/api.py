@@ -10,6 +10,14 @@ db = SQLAlchemy()
 bp = Blueprint('api', __name__, url_prefix='/api')
 
 
+@bp.route('/actors/<int:actor_id>', methods=['GET'])
+def get_actor(actor_id):
+    actor = Actor.query.get(actor_id)
+    if not actor:
+        abort(404)
+    return jsonify(actor.format())
+
+
 @bp.route('/actors', methods=['GET'])
 def get_actors():
     actors = Actor.query.all()
@@ -60,6 +68,14 @@ def patch_actor(actor_id):
     return jsonify({
         'success': True
     })
+
+
+@bp.route('/movies/<int:movie_id>', methods=['GET'])
+def get_movie(movie_id):
+    movie = Movie.query.get(movie_id)
+    if not movie:
+        abort(404)
+    return jsonify(movie.format())
 
 
 @bp.route('/movies', methods=['GET'])

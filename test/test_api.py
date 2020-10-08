@@ -6,6 +6,26 @@ from src.models import Actor, Movie
 db = SQLAlchemy()
 
 
+def test_get_actor(client):
+    actor_id = 1
+    res = client.get(f'/api/actors/{actor_id}')
+    data = res.get_json()
+    assert res.status_code == 200
+    assert 'name' in data
+    assert 'age' in data
+    assert 'gender' in data
+
+
+def test_get_actor_not_found(client):
+    actor_id = 99
+    res = client.get(f'api/actors/{actor_id}')
+    data = res.get_json()
+    assert res.status_code == 404
+    assert data['success'] is False
+    assert data['error'] == 404
+    assert data['message'] == 'Entity not found'
+
+
 def test_get_actors(client):
     res = client.get('/api/actors')
     data = res.get_json()
@@ -111,6 +131,25 @@ def test_patch_actor_not_found(client):
     data = res.get_json()
     assert res.status_code == 404
     assert isinstance(data, dict)
+    assert data['success'] is False
+    assert data['error'] == 404
+    assert data['message'] == 'Entity not found'
+
+
+def test_get_movie(client):
+    movie_id = 1
+    res = client.get(f'/api/movies/{movie_id}')
+    data = res.get_json()
+    assert res.status_code == 200
+    assert 'title' in data
+    assert 'release_date' in data
+
+
+def test_get_movie_not_found(client):
+    movie_id = 99
+    res = client.get(f'/api/movies/{movie_id}')
+    data = res.get_json()
+    assert res.status_code == 404
     assert data['success'] is False
     assert data['error'] == 404
     assert data['message'] == 'Entity not found'
