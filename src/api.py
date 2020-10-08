@@ -31,10 +31,14 @@ def delete_actor(actor_id):
     actor = Actor.query.get(actor_id)
     if not actor:
         abort(404)
-    actor.delete()
-    return jsonify({
-        'success': True
-    })
+    try:
+        actor.delete()
+        return jsonify({
+            'success': True
+        })
+    except Exception:
+        db.session.rollback()
+        abort(422)
 
 
 @bp.route('/actors', methods=['POST'])
@@ -45,7 +49,10 @@ def post_actor():
             post_data['name'],
             post_data['age'],
             Gender[post_data['gender'].upper()]
-        ).insert()
+        )
+        actor.movies = Movie.query.filter(
+            Movie.id.in_(post_data.get('movies', []))).all()
+        actor.insert()
         return jsonify({
             'success': True,
             'actor_id': actor.id
@@ -61,13 +68,20 @@ def patch_actor(actor_id):
     actor = Actor.query.get(actor_id)
     if not actor:
         abort(404)
-    actor.name = patch_data.get('name', actor.name)
-    actor.age = patch_data.get('age', actor.age)
-    actor.gender = Gender[patch_data.get('gender', actor.gender.name).upper()]
-    actor.update()
-    return jsonify({
-        'success': True
-    })
+    try:
+        actor.name = patch_data.get('name', actor.name)
+        actor.age = patch_data.get('age', actor.age)
+        actor.gender = Gender[patch_data.get(
+            'gender', actor.gender.name).upper()]
+        actor.movies = Movie.query.filter(
+            Movie.id.in_(patch_data.get('movies', []))).all()
+        actor.update()
+        return jsonify({
+            'success': True
+        })
+    except Exception:
+        db.session.rollback()
+        abort(422)
 
 
 @bp.route('/movies/<int:movie_id>', methods=['GET'])
@@ -91,10 +105,14 @@ def delete_movie(movie_id):
     movie = Movie.query.get(movie_id)
     if not movie:
         abort(404)
-    movie.delete()
-    return jsonify({
-        'success': True
-    })
+    try:
+        movie.delete()
+        return jsonify({
+            'success': True
+        })
+    except Exception:
+        db.session.rollback()
+        abort(422)
 
 
 @bp.route('/movies', methods=['POST'])
@@ -104,7 +122,10 @@ def post_movie():
         movie = Movie(
             post_data['title'],
             date.fromisoformat(post_data['release_date'])
-        ).insert()
+        )
+        movie.actors = Actor.query.filter(
+            Actor.id.in_(post_data.get('actors', []))).all()
+        movie.insert()
         return jsonify({
             'success': True,
             'movie_id': movie.id
@@ -120,12 +141,18 @@ def patch_movie(movie_id):
     movie = Movie.query.get(movie_id)
     if not movie:
         abort(404)
-    movie.title = patch_data['title']
-    movie.release_date = date.fromisoformat(patch_data['release_date'])
-    movie.update()
-    return jsonify({
-        'success': True
-    })
+    try:
+        movie.title = patch_data['title']
+        movie.release_date = date.fromisoformat(patch_data['release_date'])
+        movie.actors = Actor.query.filter(
+            Actor.id.in_(patch_data.get('actors', []))).all()
+        movie.update()
+        return jsonify({
+            'success': True
+        })
+    except Exception:
+        db.session.rollback()
+        abort(422)
 
 
 @bp.errorhandler(400)
