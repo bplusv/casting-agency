@@ -84,6 +84,38 @@ def test_post_actor_unprocessable(client):
     assert data['message'] == 'Unprocessable entity'
 
 
+def test_patch_actor(client):
+    actor_id = 1
+    patch_data = {
+        'name': 'Jane Gainwell',
+        'age': 21,
+        'gender': 'female'
+    }
+    res = client.patch(f'/api/actors/{actor_id}', json=patch_data)
+    data = res.get_json()
+    assert res.status_code == 200
+    assert isinstance(data, dict)
+    assert data['success'] is True
+    actor = Actor.query.get(actor_id)
+    assert actor.name == patch_data['name']
+    assert actor.age == patch_data['age']
+    assert actor.gender.name.lower() == patch_data['gender']
+
+
+def test_patch_actor_not_found(client):
+    actor_id = 99
+    patch_data = {
+        'age': 10
+    }
+    res = client.patch(f'/api/actors/{actor_id}', json=patch_data)
+    data = res.get_json()
+    assert res.status_code == 404
+    assert isinstance(data, dict)
+    assert data['success'] is False
+    assert data['error'] == 404
+    assert data['message'] == 'Entity not found'
+
+
 def test_get_movies(client):
     res = client.get('/api/movies')
     data = res.get_json()
@@ -156,3 +188,31 @@ def test_post_movie_unprocessable(client):
     assert data['success'] is False
     assert data['error'] == 422
     assert data['message'] == 'Unprocessable entity'
+
+
+def test_patch_movie(client):
+    movie_id = 1
+    patch_data = {
+        'title': 'Back to the future: part IV',
+        'release_date': '2022-12-01'
+    }
+    res = client.patch(f'/api/movies/{movie_id}', json=patch_data)
+    data = res.get_json()
+    assert res.status_code == 200
+    assert data['success'] is True
+    movie = Movie.query.get(movie_id)
+    assert movie.title == patch_data['title']
+    assert movie.release_date.date().isoformat() == patch_data['release_date']
+
+
+def test_patch_movie_not_found(client):
+    movie_id = 99
+    patch_data = {
+        'title': 'unkown future'
+    }
+    res = client.patch(f'/api/movies/{movie_id}', json=patch_data)
+    data = res.get_json()
+    assert res.status_code == 404
+    assert data['success'] is False
+    assert data['error'] == 404
+    assert data['message'] == 'Entity not found'

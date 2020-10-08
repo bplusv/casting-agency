@@ -47,6 +47,21 @@ def post_actor():
         abort(422)
 
 
+@bp.route('/actors/<int:actor_id>', methods=['PATCH'])
+def patch_actor(actor_id):
+    patch_data = request.get_json()
+    actor = Actor.query.get(actor_id)
+    if not actor:
+        abort(404)
+    actor.name = patch_data.get('name', actor.name)
+    actor.age = patch_data.get('age', actor.age)
+    actor.gender = Gender[patch_data.get('gender', actor.gender.name).upper()]
+    actor.update()
+    return jsonify({
+        'success': True
+    })
+
+
 @bp.route('/movies', methods=['GET'])
 def get_movies():
     movies = Movie.query.all()
@@ -81,6 +96,20 @@ def post_movie():
     except Exception:
         db.session.rollback()
         abort(422)
+
+
+@bp.route('/movies/<int:movie_id>', methods=['PATCH'])
+def patch_movie(movie_id):
+    patch_data = request.get_json()
+    movie = Movie.query.get(movie_id)
+    if not movie:
+        abort(404)
+    movie.title = patch_data['title']
+    movie.release_date = date.fromisoformat(patch_data['release_date'])
+    movie.update()
+    return jsonify({
+        'success': True
+    })
 
 
 @bp.errorhandler(400)
