@@ -27,7 +27,7 @@ def test_get_actor_not_found(client):
     assert data['message'] == 'Entity not found'
 
 
-def test_get_actors(client):
+def test_get_actors(client, auth):
     res = client.get('/api/actors')
     data = res.get_json()
     assert res.status_code == 200
@@ -39,7 +39,7 @@ def test_get_actors(client):
         assert 'movies' in actor
 
 
-def test_get_actors_not_found(client):
+def test_get_actors_not_found(client, auth):
     Actor.query.delete()
     db.session.commit()
     res = client.get('/api/actors')

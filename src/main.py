@@ -2,7 +2,6 @@ from os import getenv
 
 from flask import Flask
 from flask_migrate import Migrate
-from flask_cors import CORS
 
 
 from src.models import db
@@ -10,7 +9,6 @@ from src.api import bp as api_bp
 
 
 migrate = Migrate()
-cors = CORS()
 
 
 def create_app():
@@ -20,6 +18,5 @@ def create_app():
     with app.app_context():
         db.init_app(app)
         migrate.init_app(app, db)
-        cors.init_app(app)
         app.register_blueprint(api_bp)
     return app

@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Blueprint, jsonify, abort, request
 
 from src.models import Actor, Gender, Movie
+from src.auth import Auth
 
 
 db = SQLAlchemy()
@@ -19,6 +20,7 @@ def get_actor(actor_id):
 
 
 @bp.route('/actors', methods=['GET'])
+@Auth.requires('get:actors')
 def get_actors():
     actors = Actor.query.all()
     if not actors:

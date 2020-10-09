@@ -1,10 +1,12 @@
 import os
 from datetime import date
 
+from jose import jwt
 import pytest
 
 from src.main import create_app
 from src.models import db, Actor, Gender, Movie
+from src.auth import Auth
 
 
 def seed_db():
@@ -24,3 +26,12 @@ def client():
             db.create_all()
             seed_db()
             yield client
+
+
+@pytest.fixture
+def auth(monkeypatch):
+    bearer_header = jwt.encode({'permissions': ['get:actors']}, 'secret')
+    monkeypatch.setattr(Auth, 'get_token_auth_header',
+                        lambda: bearer_header)
+    monkeypatch.setattr(Auth, 'verify_decode_jwt',
+                        lambda token: jwt.get_unverified_claims(token))
