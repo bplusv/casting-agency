@@ -1,0 +1,31 @@
+name: ci-cd
+on:
+  - push
+  - pull_request
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build with docker
+        run: |
+          docker build -t fs-capstone .
+      - name: Lint with flake8
+        run: |
+          docker run fs-capstone sh -c "flake8 --show-source --statistics src test"
+      - name: Test with pytest
+        run: |
+          docker run fs-capstone sh -c "coverage run --source=src -m pytest test; coverage report"
+      - name: Deploy to heroku
+        if: github.ref == 'refs/heads/master'
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+          echo $HEROKU_API_KEY | docker login --username=$HEROKU_LOGIN --password-stdin registry.heroku.com
+          docker tag fs-capstone registry.heroku.com/$HEROKU_APP/web
+          docker push registry.heroku.com/$HEROKU_APP/web
+          heroku container:release web --app $HEROKU_APP
+        env:
+          HEROKU_LOGIN: ${{ secrets.HEROKU_LOGIN }}
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP: ${{ secrets.HEROKU_APP }}
