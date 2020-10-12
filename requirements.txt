@@ -3,6 +3,7 @@ atomicwrites==1.4.0
 attrs==20.2.0
 click==7.1.2
 colorama==0.4.3
+coverage==5.3
 debugpy==1.0.0rc2
 ecdsa==0.14.1
 flake8==3.8.3
