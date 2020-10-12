@@ -1,14 +1,16 @@
 from flask_sqlalchemy import SQLAlchemy
 
 from src.models import Actor, Movie
+from src.auth import Role
 
 
 db = SQLAlchemy()
 
 
-def test_get_actor(client):
+def test_get_actor(client, auth):
     actor_id = 1
-    res = client.get(f'/api/actors/{actor_id}')
+    res = client.get(f'/api/actors/{actor_id}', headers={
+        'Authorization': auth.bearer_token(Role.CASTING_ASSISTANT)})
     data = res.get_json()
     assert res.status_code == 200
     assert 'name' in data
@@ -17,9 +19,10 @@ def test_get_actor(client):
     assert 'movies' in data
 
 
-def test_get_actor_not_found(client):
+def test_get_actor_not_found(client, auth):
     actor_id = 99
-    res = client.get(f'api/actors/{actor_id}')
+    res = client.get(f'api/actors/{actor_id}', headers={
+        'Authorization': auth.bearer_token(Role.CASTING_ASSISTANT)})
     data = res.get_json()
     assert res.status_code == 404
     assert data['success'] is False
@@ -28,7 +31,8 @@ def test_get_actor_not_found(client):
 
 
 def test_get_actors(client, auth):
-    res = client.get('/api/actors')
+    res = client.get('/api/actors', headers={
+        'Authorization': auth.bearer_token(Role.CASTING_ASSISTANT)})
     data = res.get_json()
     assert res.status_code == 200
     assert isinstance(data, list)
@@ -42,7 +46,8 @@ def test_get_actors(client, auth):
 def test_get_actors_not_found(client, auth):
     Actor.query.delete()
     db.session.commit()
-    res = client.get('/api/actors')
+    res = client.get('/api/actors', headers={
+        'Authorization': auth.bearer_token(Role.CASTING_ASSISTANT)})
     data = res.get_json()
     assert res.status_code == 404
     assert isinstance(data, dict)
@@ -51,9 +56,10 @@ def test_get_actors_not_found(client, auth):
     assert data['message'] == 'Entity not found'
 
 
-def test_delete_actor(client):
+def test_delete_actor(client, auth):
     actor_id = 1
-    res = client.delete(f'/api/actors/{actor_id}')
+    res = client.delete(f'/api/actors/{actor_id}', headers={
+        'Authorization': auth.bearer_token(Role.CASTING_DIRECTOR)})
     data = res.get_json()
     assert res.status_code == 200
     assert isinstance(data, dict)
@@ -61,9 +67,10 @@ def test_delete_actor(client):
     assert Actor.query.get(actor_id) is None
 
 
-def test_delete_actor_not_found(client):
+def test_delete_actor_not_found(client, auth):
     actor_id = 99
-    res = client.delete(f'/api/actors/{actor_id}')
+    res = client.delete(f'/api/actors/{actor_id}', headers={
+        'Authorization': auth.bearer_token(Role.CASTING_DIRECTOR)})
     data = res.get_json()
     assert res.status_code == 404
     assert isinstance(data, dict)
@@ -72,13 +79,14 @@ def test_delete_actor_not_found(client):
     assert data['message'] == 'Entity not found'
 
 
-def test_post_actor_without_movies(client):
+def test_post_actor_without_movies(client, auth):
     post_data = {
         'name': 'Lisa Mcdowell',
         'age': 70,
         'gender': 'female'
     }
-    res = client.post('/api/actors', json=post_data)
+    res = client.post('/api/actors', json=post_data, headers={
+        'Authorization': auth.bearer_token(Role.CASTING_DIRECTOR)})
     data = res.get_json()
     assert res.status_code == 200
     assert isinstance(data, dict)
@@ -91,14 +99,15 @@ def test_post_actor_without_movies(client):
     assert actor.gender.name.lower() == post_data['gender']
 
 
-def test_post_actor_with_movies(client):
+def test_post_actor_with_movies(client, auth):
     post_data = {
         'name': 'Lisa Mcdowell',
         'age': 70,
         'gender': 'female',
         'movies': [2, 1]
     }
-    res = client.post('/api/actors', json=post_data)
+    res = client.post('/api/actors', json=post_data, headers={
+        'Authorization': auth.bearer_token(Role.CASTING_DIRECTOR)})
     data = res.get_json()
     assert res.status_code == 200
     assert isinstance(data, dict)
@@ -112,13 +121,14 @@ def test_post_actor_with_movies(client):
     assert set(movie.id for movie in actor.movies) == set(post_data['movies'])
 
 
-def test_post_actor_unprocessable(client):
+def test_post_actor_unprocessable(client, auth):
     post_data = {
         'name': 'Angela Rubius',
         'age': None,
         'gender': None
     }
-    res = client.post('/api/actors', json=post_data)
+    res = client.post('/api/actors', json=post_data, headers={
+        'Authorization': auth.bearer_token(Role.CASTING_DIRECTOR)})
     data = res.get_json()
     assert res.status_code == 422
     assert isinstance(data, dict)
@@ -127,14 +137,15 @@ def test_post_actor_unprocessable(client):
     assert data['message'] == 'Unprocessable entity'
 
 
-def test_patch_actor_without_movies(client):
+def test_patch_actor_without_movies(client, auth):
     actor_id = 2
     patch_data = {
         'name': 'Jane Gainwell',
         'age': 21,
         'gender': 'female'
     }
-    res = client.patch(f'/api/actors/{actor_id}', json=patch_data)
+    res = client.patch(f'/api/actors/{actor_id}', json=patch_data, headers={
+        'Authorization': auth.bearer_token(Role.CASTING_DIRECTOR)})
     data = res.get_json()
     assert res.status_code == 200
     assert isinstance(data, dict)
@@ -145,7 +156,7 @@ def test_patch_actor_without_movies(client):
     assert actor.gender.name.lower() == patch_data['gender']
 
 
-def test_patch_actor_with_movies(client):
+def test_patch_actor_with_movies(client, auth):
     actor_id = 2
     patch_data = {
         'name': 'Jane Gainwell',
@@ -153,7 +164,8 @@ def test_patch_actor_with_movies(client):
         'gender': 'female',
         'movies': [2, 1]
     }
-    res = client.patch(f'/api/actors/{actor_id}', json=patch_data)
+    res = client.patch(f'/api/actors/{actor_id}', json=patch_data, headers={
+        'Authorization': auth.bearer_token(Role.CASTING_DIRECTOR)})
     data = res.get_json()
     assert res.status_code == 200
     assert isinstance(data, dict)
@@ -165,12 +177,13 @@ def test_patch_actor_with_movies(client):
     assert set(movie.id for movie in actor.movies) == set(patch_data['movies'])
 
 
-def test_patch_actor_not_found(client):
+def test_patch_actor_not_found(client, auth):
     actor_id = 99
     patch_data = {
         'age': 10
     }
-    res = client.patch(f'/api/actors/{actor_id}', json=patch_data)
+    res = client.patch(f'/api/actors/{actor_id}', json=patch_data, headers={
+        'Authorization': auth.bearer_token(Role.CASTING_DIRECTOR)})
     data = res.get_json()
     assert res.status_code == 404
     assert isinstance(data, dict)
@@ -179,9 +192,10 @@ def test_patch_actor_not_found(client):
     assert data['message'] == 'Entity not found'
 
 
-def test_get_movie(client):
+def test_get_movie(client, auth):
     movie_id = 1
-    res = client.get(f'/api/movies/{movie_id}')
+    res = client.get(f'/api/movies/{movie_id}', headers={
+        'Authorization': auth.bearer_token(Role.CASTING_ASSISTANT)})
     data = res.get_json()
     assert res.status_code == 200
     assert 'title' in data
@@ -189,9 +203,10 @@ def test_get_movie(client):
     assert 'actors' in data
 
 
-def test_get_movie_not_found(client):
+def test_get_movie_not_found(client, auth):
     movie_id = 99
-    res = client.get(f'/api/movies/{movie_id}')
+    res = client.get(f'/api/movies/{movie_id}', headers={
+        'Authorization': auth.bearer_token(Role.CASTING_ASSISTANT)})
     data = res.get_json()
     assert res.status_code == 404
     assert data['success'] is False
@@ -199,8 +214,9 @@ def test_get_movie_not_found(client):
     assert data['message'] == 'Entity not found'
 
 
-def test_get_movies(client):
-    res = client.get('/api/movies')
+def test_get_movies(client, auth):
+    res = client.get('/api/movies', headers={
+        'Authorization': auth.bearer_token(Role.CASTING_ASSISTANT)})
     data = res.get_json()
     assert res.status_code == 200
     assert isinstance(data, list)
@@ -210,10 +226,11 @@ def test_get_movies(client):
         assert 'actors' in movie
 
 
-def test_get_movies_not_found(client):
+def test_get_movies_not_found(client, auth):
     Movie.query.delete()
     db.session.commit()
-    res = client.get('/api/movies')
+    res = client.get('/api/movies', headers={
+        'Authorization': auth.bearer_token(Role.CASTING_ASSISTANT)})
     data = res.get_json()
     assert res.status_code == 404
     assert isinstance(data, dict)
@@ -222,9 +239,10 @@ def test_get_movies_not_found(client):
     assert data['message'] == 'Entity not found'
 
 
-def test_delete_movie(client):
+def test_delete_movie(client, auth):
     movie_id = 1
-    res = client.delete(f'/api/movies/{movie_id}')
+    res = client.delete(f'/api/movies/{movie_id}', headers={
+        'Authorization': auth.bearer_token(Role.EXECUTIVE_PRODUCER)})
     data = res.get_json()
     assert res.status_code == 200
     assert isinstance(data, dict)
@@ -232,9 +250,10 @@ def test_delete_movie(client):
     assert Movie.query.get(movie_id) is None
 
 
-def test_delete_movie_not_found(client):
+def test_delete_movie_not_found(client, auth):
     movie_id = 99
-    res = client.delete(f'/api/movies/{movie_id}')
+    res = client.delete(f'/api/movies/{movie_id}', headers={
+        'Authorization': auth.bearer_token(Role.EXECUTIVE_PRODUCER)})
     data = res.get_json()
     assert res.status_code == 404
     assert isinstance(data, dict)
@@ -243,12 +262,13 @@ def test_delete_movie_not_found(client):
     assert data['message'] == 'Entity not found'
 
 
-def test_post_movie_without_actors(client):
+def test_post_movie_without_actors(client, auth):
     post_data = {
         'title': 'blue ocean',
         'release_date': '1998-05-21'
     }
-    res = client.post('/api/movies', json=post_data)
+    res = client.post('/api/movies', json=post_data, headers={
+        'Authorization': auth.bearer_token(Role.EXECUTIVE_PRODUCER)})
     data = res.get_json()
     assert res.status_code == 200
     assert isinstance(data, dict)
@@ -260,13 +280,14 @@ def test_post_movie_without_actors(client):
     assert movie.release_date.date().isoformat() == post_data['release_date']
 
 
-def test_post_movie_with_actors(client):
+def test_post_movie_with_actors(client, auth):
     post_data = {
         'title': 'blue ocean',
         'release_date': '1998-05-21',
         'actors': [2, 1]
     }
-    res = client.post('/api/movies', json=post_data)
+    res = client.post('/api/movies', json=post_data, headers={
+        'Authorization': auth.bearer_token(Role.EXECUTIVE_PRODUCER)})
     data = res.get_json()
     assert res.status_code == 200
     assert isinstance(data, dict)
@@ -279,12 +300,13 @@ def test_post_movie_with_actors(client):
     assert set(actor.id for actor in movie.actors) == set(post_data['actors'])
 
 
-def test_post_movie_unprocessable(client):
+def test_post_movie_unprocessable(client, auth):
     post_data = {
         'title': 'another world 2',
         'release_date': None
     }
-    res = client.post('/api/movies', json=post_data)
+    res = client.post('/api/movies', json=post_data, headers={
+        'Authorization': auth.bearer_token(Role.EXECUTIVE_PRODUCER)})
     data = res.get_json()
     assert res.status_code == 422
     assert isinstance(data, dict)
@@ -293,13 +315,14 @@ def test_post_movie_unprocessable(client):
     assert data['message'] == 'Unprocessable entity'
 
 
-def test_patch_movie_without_actors(client):
+def test_patch_movie_without_actors(client, auth):
     movie_id = 1
     patch_data = {
         'title': 'Back to the future: part IV',
         'release_date': '2022-12-01'
     }
-    res = client.patch(f'/api/movies/{movie_id}', json=patch_data)
+    res = client.patch(f'/api/movies/{movie_id}', json=patch_data, headers={
+        'Authorization': auth.bearer_token(Role.CASTING_DIRECTOR)})
     data = res.get_json()
     assert res.status_code == 200
     assert data['success'] is True
@@ -308,14 +331,15 @@ def test_patch_movie_without_actors(client):
     assert movie.release_date.date().isoformat() == patch_data['release_date']
 
 
-def test_patch_movie_with_actors(client):
+def test_patch_movie_with_actors(client, auth):
     movie_id = 1
     patch_data = {
         'title': 'Back to the future: part IV',
         'release_date': '2022-12-01',
         'actors': [2, 1]
     }
-    res = client.patch(f'/api/movies/{movie_id}', json=patch_data)
+    res = client.patch(f'/api/movies/{movie_id}', json=patch_data, headers={
+        'Authorization': auth.bearer_token(Role.CASTING_DIRECTOR)})
     data = res.get_json()
     assert res.status_code == 200
     assert data['success'] is True
@@ -325,12 +349,13 @@ def test_patch_movie_with_actors(client):
     assert set(actor.id for actor in movie.actors) == set(patch_data['actors'])
 
 
-def test_patch_movie_not_found(client):
+def test_patch_movie_not_found(client, auth):
     movie_id = 99
     patch_data = {
         'title': 'unkown future'
     }
-    res = client.patch(f'/api/movies/{movie_id}', json=patch_data)
+    res = client.patch(f'/api/movies/{movie_id}', json=patch_data, headers={
+        'Authorization': auth.bearer_token(Role.CASTING_DIRECTOR)})
     data = res.get_json()
     assert res.status_code == 404
     assert data['success'] is False

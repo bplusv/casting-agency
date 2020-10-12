@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Blueprint, jsonify, abort, request
 
 from src.models import Actor, Gender, Movie
-from src.auth import Auth
+from src.auth import requires_auth
 
 
 db = SQLAlchemy()
@@ -12,6 +12,7 @@ bp = Blueprint('api', __name__, url_prefix='/api')
 
 
 @bp.route('/actors/<int:actor_id>', methods=['GET'])
+@requires_auth('get:actor')
 def get_actor(actor_id):
     actor = Actor.query.get(actor_id)
     if not actor:
@@ -20,7 +21,7 @@ def get_actor(actor_id):
 
 
 @bp.route('/actors', methods=['GET'])
-@Auth.requires('get:actors')
+@requires_auth('get:actors')
 def get_actors():
     actors = Actor.query.all()
     if not actors:
@@ -29,6 +30,7 @@ def get_actors():
 
 
 @bp.route('/actors/<int:actor_id>', methods=['DELETE'])
+@requires_auth('delete:actor')
 def delete_actor(actor_id):
     actor = Actor.query.get(actor_id)
     if not actor:
@@ -44,6 +46,7 @@ def delete_actor(actor_id):
 
 
 @bp.route('/actors', methods=['POST'])
+@requires_auth('post:actor')
 def post_actor():
     post_data = request.get_json()
     try:
@@ -65,6 +68,7 @@ def post_actor():
 
 
 @bp.route('/actors/<int:actor_id>', methods=['PATCH'])
+@requires_auth('patch:actor')
 def patch_actor(actor_id):
     patch_data = request.get_json()
     actor = Actor.query.get(actor_id)
@@ -87,6 +91,7 @@ def patch_actor(actor_id):
 
 
 @bp.route('/movies/<int:movie_id>', methods=['GET'])
+@requires_auth('get:movie')
 def get_movie(movie_id):
     movie = Movie.query.get(movie_id)
     if not movie:
@@ -95,6 +100,7 @@ def get_movie(movie_id):
 
 
 @bp.route('/movies', methods=['GET'])
+@requires_auth('get:movies')
 def get_movies():
     movies = Movie.query.all()
     if not movies:
@@ -103,6 +109,7 @@ def get_movies():
 
 
 @bp.route('/movies/<int:movie_id>', methods=['DELETE'])
+@requires_auth('delete:movie')
 def delete_movie(movie_id):
     movie = Movie.query.get(movie_id)
     if not movie:
@@ -118,6 +125,7 @@ def delete_movie(movie_id):
 
 
 @bp.route('/movies', methods=['POST'])
+@requires_auth('post:movie')
 def post_movie():
     post_data = request.get_json()
     try:
@@ -138,6 +146,7 @@ def post_movie():
 
 
 @bp.route('/movies/<int:movie_id>', methods=['PATCH'])
+@requires_auth('patch:movie')
 def patch_movie(movie_id):
     patch_data = request.get_json()
     movie = Movie.query.get(movie_id)

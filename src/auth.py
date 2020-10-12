@@ -1,5 +1,6 @@
 from functools import wraps
 import json
+import enum
 
 from flask import Blueprint, request, jsonify, _request_ctx_stack
 from urllib.request import urlopen
@@ -11,6 +12,12 @@ bp = Blueprint('auth', __name__)
 AUTH0_DOMAIN = 'fs-capstone.us.auth0.com'
 API_AUDIENCE = 'https://fs-capstone.herokuapp.com/api'
 ALGORITHMS = ["RS256"]
+
+
+class Role(enum.Enum):
+    CASTING_ASSISTANT = 1
+    CASTING_DIRECTOR = 2
+    EXECUTIVE_PRODUCER = 3
 
 
 class AuthError(Exception):
@@ -106,15 +113,15 @@ class Auth:
         raise AuthError({"code": "invalid_header",
                         "description": "Unable to find appropriate key"}, 401)
 
-    @staticmethod
-    def requires(permission=''):
-        def requires_auth_decorator(f):
-            @wraps(f)
-            def wrapper(*args, **kwargs):
-                token = Auth.get_token_auth_header()
-                payload = Auth.verify_decode_jwt(token)
-                if Auth.check_permissions(permission, payload):
-                    _request_ctx_stack.top.current_user = payload
-                    return f(*args, **kwargs)
-            return wrapper
-        return requires_auth_decorator
+
+def requires_auth(permission=''):
+    def requires_auth_decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            token = Auth.get_token_auth_header()
+            payload = Auth.verify_decode_jwt(token)
+            if Auth.check_permissions(permission, payload):
+                _request_ctx_stack.top.current_user = payload
+                return f(*args, **kwargs)
+        return wrapper
+    return requires_auth_decorator

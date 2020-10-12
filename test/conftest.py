@@ -6,7 +6,7 @@ import pytest
 
 from src.main import create_app
 from src.models import db, Actor, Gender, Movie
-from src.auth import Auth
+from src.auth import Auth, Role
 
 
 def seed_db():
@@ -30,8 +30,24 @@ def client():
 
 @pytest.fixture
 def auth(monkeypatch):
-    bearer_header = jwt.encode({'permissions': ['get:actors']}, 'secret')
-    monkeypatch.setattr(Auth, 'get_token_auth_header',
-                        lambda: bearer_header)
+    class AuthFixture:
+        @staticmethod
+        def bearer_token(role):
+            permissions = []
+            if role == Role.CASTING_ASSISTANT:
+                permissions = ['get:actor', 'get:actors', 'get:movie',
+                               'get:movies']
+            elif role == Role.CASTING_DIRECTOR:
+                permissions = ['get:actor', 'get:actors', 'get:movie',
+                               'get:movies', 'delete:actor', 'post:actor',
+                               'patch:actor', 'patch:movie']
+            elif role == Role.EXECUTIVE_PRODUCER:
+                permissions = ['get:actor', 'get:actors', 'get:movie',
+                               'get:movies', 'delete:actor', 'post:actor',
+                               'patch:actor', 'patch:movie', 'delete:movie',
+                               'post:movie']
+            return f"Bearer {jwt.encode({'permissions': permissions}, 'key')}"
+
     monkeypatch.setattr(Auth, 'verify_decode_jwt',
                         lambda token: jwt.get_unverified_claims(token))
+    return AuthFixture
