@@ -11,6 +11,11 @@ db = SQLAlchemy()
 bp = Blueprint('api', __name__, url_prefix='/api')
 
 
+@bp.route('/test')
+def test():
+    return 'testo'
+
+
 @bp.route('/actors/<int:actor_id>', methods=['GET'])
 @requires_auth('get:actor')
 def get_actor(actor_id):
