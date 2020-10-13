@@ -6,7 +6,7 @@ import pytest
 
 from src.main import create_app
 from src.models import db, Actor, Gender, Movie
-from src.auth import Auth, Role
+from src.auth import Auth, UserRole
 
 
 def seed_db():
@@ -34,14 +34,14 @@ def auth(monkeypatch):
         @staticmethod
         def bearer_token(role):
             permissions = []
-            if role == Role.CASTING_ASSISTANT:
+            if role == UserRole.CASTING_ASSISTANT:
                 permissions = ['get:actor', 'get:actors', 'get:movie',
                                'get:movies']
-            elif role == Role.CASTING_DIRECTOR:
+            elif role == UserRole.CASTING_DIRECTOR:
                 permissions = ['get:actor', 'get:actors', 'get:movie',
                                'get:movies', 'delete:actor', 'post:actor',
                                'patch:actor', 'patch:movie']
-            elif role == Role.EXECUTIVE_PRODUCER:
+            elif role == UserRole.EXECUTIVE_PRODUCER:
                 permissions = ['get:actor', 'get:actors', 'get:movie',
                                'get:movies', 'delete:actor', 'post:actor',
                                'patch:actor', 'patch:movie', 'delete:movie',

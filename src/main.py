@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 
 
 from src.models import db
-from src.api import bp as api_bp
+from src.api import actors, movies, errors
 
 
 migrate = Migrate()
@@ -18,5 +18,7 @@ def create_app():
     with app.app_context():
         db.init_app(app)
         migrate.init_app(app, db)
-        app.register_blueprint(api_bp)
+        app.register_blueprint(errors.bp)
+        app.register_blueprint(actors.bp)
+        app.register_blueprint(movies.bp)
     return app

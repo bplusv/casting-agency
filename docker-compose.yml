@@ -10,7 +10,7 @@ services:
       FLASK_ENV: development
     command: /bin/sh -c "flask db upgrade && flask run -h 0.0.0.0"
     volumes:
-      - .:/app:cached
+      - .:/app
     depends_on:
       - postgres
     restart: always
