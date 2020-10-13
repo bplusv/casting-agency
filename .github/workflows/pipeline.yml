@@ -8,6 +8,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Build with docker
         run: |
+          echo ${{ github.ref }}
           docker build -t fs-capstone .
       - name: Lint with flake8
         run: |
