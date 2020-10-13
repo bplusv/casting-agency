@@ -1,3 +1,3 @@
 # FS-Capstone
 
-![ci-cd](https://github.com/bplusv/fs-capstone/workflows/ci-cd/badge.svg?branch=master)
+![ci](https://github.com/bplusv/fs-capstone/workflows/ci/badge.svg?branch=master)
