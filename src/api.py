@@ -13,7 +13,7 @@ bp = Blueprint('api', __name__, url_prefix='/api')
 
 @bp.route('/test')
 def test():
-    return 'testoz'
+    return 'what testoz'
 
 
 @bp.route('/actors/<int:actor_id>', methods=['GET'])
