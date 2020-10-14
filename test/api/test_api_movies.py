@@ -13,6 +13,7 @@ def test_get_movie(client, auth):
         'Authorization': auth.bearer_token(UserRole.CASTING_ASSISTANT)})
     data = res.get_json()
     assert res.status_code == 200
+    assert 'id' in data
     assert 'title' in data
     assert 'release_date' in data
     assert 'actors' in data
@@ -36,6 +37,7 @@ def test_get_movies(client, auth):
     assert res.status_code == 200
     assert isinstance(data, list)
     for movie in data:
+        assert 'id' in movie
         assert 'title' in movie
         assert 'release_date' in movie
         assert 'actors' in movie

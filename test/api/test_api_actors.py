@@ -13,6 +13,7 @@ def test_get_actor(client, auth):
         'Authorization': auth.bearer_token(UserRole.CASTING_ASSISTANT)})
     data = res.get_json()
     assert res.status_code == 200
+    assert 'id' in data
     assert 'name' in data
     assert 'age' in data
     assert 'gender' in data
@@ -37,6 +38,7 @@ def test_get_actors(client, auth):
     assert res.status_code == 200
     assert isinstance(data, list)
     for actor in data:
+        assert 'id' in actor
         assert 'name' in actor
         assert 'age' in actor
         assert 'gender' in actor
