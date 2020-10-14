@@ -139,12 +139,11 @@ def test_post_actor_unprocessable(client, auth):
     assert data['message'] == 'Unprocessable entity'
 
 
-def test_patch_actor_without_movies(client, auth):
+def test_patch_actor_with_name_age(client, auth):
     actor_id = 2
     patch_data = {
         'name': 'Jane Gainwell',
-        'age': 21,
-        'gender': 'female'
+        'age': 21
     }
     res = client.patch(f'/api/actors/{actor_id}', json=patch_data, headers={
         'Authorization': auth.bearer_token(UserRole.CASTING_DIRECTOR)})
@@ -155,14 +154,11 @@ def test_patch_actor_without_movies(client, auth):
     actor = Actor.query.get(actor_id)
     assert actor.name == patch_data['name']
     assert actor.age == patch_data['age']
-    assert actor.gender.name.lower() == patch_data['gender']
 
 
-def test_patch_actor_with_movies(client, auth):
+def test_patch_actor_with_gender_movies(client, auth):
     actor_id = 2
     patch_data = {
-        'name': 'Jane Gainwell',
-        'age': 21,
         'gender': 'female',
         'movies': [2, 1]
     }
@@ -173,8 +169,6 @@ def test_patch_actor_with_movies(client, auth):
     assert isinstance(data, dict)
     assert data['success'] is True
     actor = Actor.query.get(actor_id)
-    assert actor.name == patch_data['name']
-    assert actor.age == patch_data['age']
     assert actor.gender.name.lower() == patch_data['gender']
     assert set(movie.id for movie in actor.movies) == set(patch_data['movies'])
 

@@ -132,10 +132,9 @@ def test_post_movie_unprocessable(client, auth):
     assert data['message'] == 'Unprocessable entity'
 
 
-def test_patch_movie_without_actors(client, auth):
+def test_patch_movie_with_release_date(client, auth):
     movie_id = 1
     patch_data = {
-        'title': 'Back to the future: part IV',
         'release_date': '2022-12-01'
     }
     res = client.patch(f'/api/movies/{movie_id}', json=patch_data, headers={
@@ -144,15 +143,13 @@ def test_patch_movie_without_actors(client, auth):
     assert res.status_code == 200
     assert data['success'] is True
     movie = Movie.query.get(movie_id)
-    assert movie.title == patch_data['title']
     assert movie.release_date.date().isoformat() == patch_data['release_date']
 
 
-def test_patch_movie_with_actors(client, auth):
+def test_patch_movie_with_title_actors(client, auth):
     movie_id = 1
     patch_data = {
         'title': 'Back to the future: part IV',
-        'release_date': '2022-12-01',
         'actors': [2, 1]
     }
     res = client.patch(f'/api/movies/{movie_id}', json=patch_data, headers={
@@ -162,7 +159,6 @@ def test_patch_movie_with_actors(client, auth):
     assert data['success'] is True
     movie = Movie.query.get(movie_id)
     assert movie.title == patch_data['title']
-    assert movie.release_date.date().isoformat() == patch_data['release_date']
     assert set(actor.id for actor in movie.actors) == set(patch_data['actors'])
 
 

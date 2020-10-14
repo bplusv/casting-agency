@@ -74,8 +74,9 @@ def patch_movie(movie_id):
     if not movie:
         abort(404)
     try:
-        movie.title = patch_data['title']
-        movie.release_date = date.fromisoformat(patch_data['release_date'])
+        movie.title = patch_data.get('title', movie.title)
+        movie.release_date = date.fromisoformat(patch_data.get(
+            'release_date', movie.release_date.date().isoformat()))
         movie.actors = Actor.query.filter(
             Actor.id.in_(patch_data.get('actors', []))).all()
         movie.update()
