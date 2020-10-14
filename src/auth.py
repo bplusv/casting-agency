@@ -7,8 +7,8 @@ from urllib.request import urlopen
 from jose import jwt
 
 
-AUTH0_DOMAIN = 'fs-capstone.us.auth0.com'
-API_AUDIENCE = 'https://fs-capstone.herokuapp.com/api'
+AUTH0_DOMAIN = 'ufs-casting-agency.us.auth0.com'
+API_AUDIENCE = 'https://ufs-casting-agency.herokuapp.com/api'
 ALGORITHMS = ["RS256"]
 
 
