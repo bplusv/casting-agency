@@ -1,4 +1,5 @@
 FROM python:3.8.6-slim
+RUN apt-get -yq update && apt-get install -yq git curl
 
 WORKDIR /app
 RUN useradd -m appuser

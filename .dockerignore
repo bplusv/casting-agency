@@ -1,5 +1,6 @@
-.git
 .pytest_cache
 .vscode
 venv
 **/__pycache__
+.coverage
+coverage.xml

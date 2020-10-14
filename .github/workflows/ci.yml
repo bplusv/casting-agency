@@ -1,7 +1,8 @@
 name: ci
 on:
-  - push
-  - pull_request
+  push:
+    branches:
+      - master
 jobs:
   pipeline:
     runs-on: ubuntu-latest
@@ -10,19 +11,23 @@ jobs:
         uses: actions/checkout@v2
       - name: Build with docker
         run: |
-          docker build -t ufs-capstone .
+          docker build -t ufs-casting-agency_webapp .
       - name: Lint with flake8
         run: |
-          docker run ufs-capstone sh -c "flake8 --show-source --statistics src test"
+          docker run ufs-casting-agency_webapp bash -c "flake8 --show-source --statistics src test"
       - name: Test with pytest
         run: |
-          docker run ufs-capstone sh -c "coverage run --source=src -m pytest test; coverage report"
+          ci_env=`bash <(curl -s https://codecov.io/env)`
+          docker run $ci_env ufs-casting-agency_webapp bash -c \
+            "coverage run --source=src -m pytest test && \
+            bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN"
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - name: Deploy to heroku
-        if: github.ref == 'refs/heads/master'
         run: |
-          curl https://cli-assets.heroku.com/install.sh | sh
+          curl https://cli-assets.heroku.com/install.sh | bash
           echo $HEROKU_API_KEY | docker login --username=$HEROKU_LOGIN --password-stdin registry.heroku.com
-          docker tag ufs-capstone registry.heroku.com/$HEROKU_APP/web
+          docker tag ufs-casting-agency_webapp registry.heroku.com/$HEROKU_APP/web
           docker push registry.heroku.com/$HEROKU_APP/web
           heroku container:release web --app $HEROKU_APP
         env:

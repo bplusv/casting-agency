@@ -1,5 +1,5 @@
 # UFS Casting Agency
-![ci](https://github.com/bplusv/ufs-casting-agency/workflows/ci/badge.svg?branch=master)
+[![ci](https://github.com/bplusv/ufs-casting-agency/workflows/ci/badge.svg?branch=master)](https://github.com/bplusv/ufs-casting-agency/actions?query=workflow%3Aci+branch%3Amaster) [![codecov](https://codecov.io/gh/bplusv/ufs-casting-agency/branch/master/graph/badge.svg?token=77LGDR4ANN)](https://codecov.io/gh/bplusv/ufs-casting-agency)
 
 UFS Casting Agency is an API to manage actors and movies data, including users authentication and permissions by user role.
 - Back-end REST API built with Flask, SQLAlchemy and Postgresql.
