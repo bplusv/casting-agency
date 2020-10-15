@@ -6,31 +6,28 @@ on:
 jobs:
   pipeline:
     runs-on: ubuntu-latest
+    env:
+      HEROKU_LOGIN: ${{secrets.HEROKU_LOGIN}}
+      HEROKU_API_KEY: ${{secrets.HEROKU_API_KEY}}
+      HEROKU_APP: ${{secrets.HEROKU_APP}}
+      CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build with docker
         run: |
-          docker build -t ufs-casting-agency_webapp .
+          docker build -t $HEROKU_APP .
       - name: Lint with flake8
         run: |
-          docker run ufs-casting-agency_webapp bash -c "flake8 --show-source --statistics src test"
+          docker run $HEROKU_APP sh -c "flake8 --show-source --statistics src test"
       - name: Test with pytest
         run: |
-          ci_env=`bash <(curl -s https://codecov.io/env)`
-          docker run $ci_env ufs-casting-agency_webapp bash -c \
-            "coverage run --source=src -m pytest test && \
-            bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN"
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          docker run -v "$PWD/shared:/shared" $HEROKU_APP sh -c \
+            "coverage run --source=src -m pytest test && coverage xml -o /shared/coverage.xml"
+          bash <(curl -s https://codecov.io/bash) -f shared/coverage.xml
       - name: Deploy to heroku
         run: |
-          curl https://cli-assets.heroku.com/install.sh | bash
           echo $HEROKU_API_KEY | docker login --username=$HEROKU_LOGIN --password-stdin registry.heroku.com
-          docker tag ufs-casting-agency_webapp registry.heroku.com/$HEROKU_APP/web
+          docker tag $HEROKU_APP registry.heroku.com/$HEROKU_APP/web
           docker push registry.heroku.com/$HEROKU_APP/web
           heroku container:release web --app $HEROKU_APP
-        env:
-          HEROKU_LOGIN: ${{ secrets.HEROKU_LOGIN }}
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_APP: ${{ secrets.HEROKU_APP }}
