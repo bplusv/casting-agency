@@ -4,7 +4,7 @@ from datetime import date
 from jose import jwt
 import pytest
 
-from src.main import create_app
+from src.app import create_app
 from src.models import db, Actor, Gender, Movie
 from src.auth import Auth, UserRole
 
@@ -16,9 +16,17 @@ def seed_db():
     Movie('A new bright sunshine', date.fromisoformat('2022-09-01')).insert()
 
 
+@pytest.fixture(autouse=True)
+def env():
+    os.environ['AUTH0_DOMAIN'] = 'ufs-casting-agency.us.auth0.com'
+    os.environ['API_AUDIENCE'] = 'https://ufs-casting-agency.herokuapp.com/api'
+    os.environ['ALGORITHMS'] = 'RS256'
+    os.environ['DATABASE_URL'] = 'sqlite:///:memory:'
+    os.environ['PORT'] = '5000'
+
+
 @pytest.fixture
 def client():
-    os.environ['DATABASE_URL'] = 'sqlite:///:memory:'
     app = create_app()
     app.config['TESTING'] = True
     with app.test_client() as client:

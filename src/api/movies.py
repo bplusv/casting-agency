@@ -1,3 +1,4 @@
+import sys
 from datetime import date
 
 from flask_sqlalchemy import SQLAlchemy
@@ -16,7 +17,7 @@ bp = Blueprint('api_movies', __name__, url_prefix='/api')
 def get_movie(movie_id):
     movie = Movie.query.get(movie_id)
     if not movie:
-        abort(404)
+        abort(404, 'Movie not found')
     return jsonify(movie.format())
 
 
@@ -25,7 +26,7 @@ def get_movie(movie_id):
 def get_movies():
     movies = Movie.query.all()
     if not movies:
-        abort(404)
+        abort(404, 'No movies added yet')
     return jsonify([movie.format() for movie in movies])
 
 
@@ -34,7 +35,7 @@ def get_movies():
 def delete_movie(movie_id):
     movie = Movie.query.get(movie_id)
     if not movie:
-        abort(404)
+        abort(404, 'Movie not found')
     try:
         movie.delete()
         return jsonify({
@@ -42,7 +43,8 @@ def delete_movie(movie_id):
         })
     except Exception:
         db.session.rollback()
-        abort(422)
+        print(sys.exc_info())
+        abort(422, 'Unprocessable request to remove Movie')
 
 
 @bp.route('/movies', methods=['POST'])
@@ -63,7 +65,8 @@ def post_movie():
         })
     except Exception:
         db.session.rollback()
-        abort(422)
+        print(sys.exc_info())
+        abort(422, 'Unprocessable request to add new Movie')
 
 
 @bp.route('/movies/<int:movie_id>', methods=['PATCH'])
@@ -72,7 +75,7 @@ def patch_movie(movie_id):
     patch_data = request.get_json()
     movie = Movie.query.get(movie_id)
     if not movie:
-        abort(404)
+        abort(404, 'Movie not found')
     try:
         movie.title = patch_data.get('title', movie.title)
         movie.release_date = date.fromisoformat(patch_data.get(
@@ -85,4 +88,5 @@ def patch_movie(movie_id):
         })
     except Exception:
         db.session.rollback()
-        abort(422)
+        print(sys.exc_info())
+        abort(422, 'Unprocessable request to update existing Movie')

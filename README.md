@@ -1,7 +1,7 @@
-# UFS Casting Agency
-[![ci](https://github.com/bplusv/ufs-casting-agency/workflows/ci/badge.svg?branch=master)](https://github.com/bplusv/ufs-casting-agency/actions?query=workflow%3Aci+branch%3Amaster) [![codecov](https://codecov.io/gh/bplusv/ufs-casting-agency/branch/master/graph/badge.svg?token=77LGDR4ANN)](https://codecov.io/gh/bplusv/ufs-casting-agency)
+# Casting Agency
+[![ci](https://github.com/bplusv/casting-agency/workflows/ci/badge.svg?branch=master)](https://github.com/bplusv/casting-agency/actions?query=workflow%3Aci+branch%3Amaster) [![codecov](https://codecov.io/gh/bplusv/casting-agency/branch/master/graph/badge.svg?token=77LGDR4ANN)](https://codecov.io/gh/bplusv/casting-agency)
 
-UFS Casting Agency is an API to manage actors and movies data, including users authentication and permissions by user role.
+Casting Agency is an API to manage actors and movies data, including users authentication and permissions by user role.
 - Back-end REST API built with Flask, SQLAlchemy and Postgresql.
 - Authentication & Roles with Auth0 service + JWT (JSON Web Tokens).
 - API Unit tests with pytest & SQLite.
@@ -258,6 +258,7 @@ The API will return the following error types when requests fail:
 - 401: Unauthorized
 - 403: Forbidden
 - 404: Entity Not Found
+- 405: Method Not Allowed
 - 422: Unprocessable Entity
 - 500: Internal Server Error
 

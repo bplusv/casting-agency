@@ -27,7 +27,7 @@ def test_get_movie_not_found(client, auth):
     assert res.status_code == 404
     assert data['success'] is False
     assert data['error'] == 404
-    assert data['message'] == 'Entity not found'
+    assert data['message'] == 'Movie not found'
 
 
 def test_get_movies(client, auth):
@@ -53,7 +53,7 @@ def test_get_movies_not_found(client, auth):
     assert isinstance(data, dict)
     assert data['success'] is False
     assert data['error'] == 404
-    assert data['message'] == 'Entity not found'
+    assert data['message'] == 'No movies added yet'
 
 
 def test_delete_movie(client, auth):
@@ -76,7 +76,7 @@ def test_delete_movie_not_found(client, auth):
     assert isinstance(data, dict)
     assert data['success'] is False
     assert data['error'] == 404
-    assert data['message'] == 'Entity not found'
+    assert data['message'] == 'Movie not found'
 
 
 def test_post_movie_without_actors(client, auth):
@@ -129,7 +129,7 @@ def test_post_movie_unprocessable(client, auth):
     assert isinstance(data, dict)
     assert data['success'] is False
     assert data['error'] == 422
-    assert data['message'] == 'Unprocessable entity'
+    assert data['message'] == 'Unprocessable request to add new Movie'
 
 
 def test_patch_movie_with_release_date(client, auth):
@@ -173,4 +173,4 @@ def test_patch_movie_not_found(client, auth):
     assert res.status_code == 404
     assert data['success'] is False
     assert data['error'] == 404
-    assert data['message'] == 'Entity not found'
+    assert data['message'] == 'Movie not found'

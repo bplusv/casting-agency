@@ -20,7 +20,24 @@ movie_actors_table = db.Table(
 )
 
 
-class Actor(db.Model):
+class CrudModel(db.Model):
+    __abstract__ = True
+
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+        return self
+
+    def update(self):
+        db.session.commit()
+        return self
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+
+class Actor(CrudModel):
     __tablename__ = 'actors'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
@@ -33,19 +50,6 @@ class Actor(db.Model):
         self.age = age
         self.gender = gender
 
-    def insert(self):
-        db.session.add(self)
-        db.session.commit()
-        return self
-
-    def update(self):
-        db.session.commit()
-        return self
-
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
-
     def format(self):
         return {
             'id': self.id,
@@ -56,7 +60,7 @@ class Actor(db.Model):
         }
 
 
-class Movie(db.Model):
+class Movie(CrudModel):
     __tablename__ = 'movies'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
@@ -66,19 +70,6 @@ class Movie(db.Model):
     def __init__(self, title, release_date):
         self.title = title
         self.release_date = release_date
-
-    def insert(self):
-        db.session.add(self)
-        db.session.commit()
-        return self
-
-    def update(self):
-        db.session.commit()
-        return self
-
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
 
     def format(self):
         return {

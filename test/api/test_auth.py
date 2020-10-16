@@ -55,7 +55,7 @@ def test_unable_to_find_key_auth0_validation(client):
     data = res.get_json()
     assert res.status_code == 401
     assert data['message'] == ('Unauthorized: JWT unable to '
-                               'find appropriate key')
+                               'find kid key')
 
 
 def test_unable_to_parse_token_auth0_validation(client):
@@ -66,4 +66,4 @@ def test_unable_to_parse_token_auth0_validation(client):
     })
     data = res.get_json()
     assert res.status_code == 401
-    assert data['message'] == 'Unauthorized: JWT Unable to parse token'
+    assert data['message'] == 'Unauthorized: JWT cannot parse token'

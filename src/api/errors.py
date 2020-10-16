@@ -9,7 +9,7 @@ def bad_request(e):
     return jsonify({
         'success': False,
         'error': 400,
-        'message': 'Bad request'
+        'message': e.description
     }), 400
 
 
@@ -18,7 +18,7 @@ def unauthorized(e):
     return jsonify({
         'success': False,
         'error': 401,
-        'message': f'Unauthorized: {e.description}'
+        'message': e.description
     }), 401
 
 
@@ -27,7 +27,7 @@ def forbidden(e):
     return jsonify({
         'success': False,
         'error': 403,
-        'message': f'Forbidden: {e.description}'
+        'message': e.description
     }), 403
 
 
@@ -36,7 +36,16 @@ def not_found(e):
     return jsonify({
         'success': False,
         'error': 404,
-        'message': 'Entity not found'
+        'message': e.description
+    }), 404
+
+
+@bp.app_errorhandler(405)
+def method_not_allowed(e):
+    return jsonify({
+        'success': False,
+        'error': 405,
+        'message': e.description
     }), 404
 
 
@@ -45,7 +54,7 @@ def unprocessable_entity(e):
     return jsonify({
         'success': False,
         'error': 422,
-        'message': 'Unprocessable entity'
+        'message': e.description
     }), 422
 
 
@@ -54,5 +63,5 @@ def internal_server_error(e):
     return jsonify({
         'success': False,
         'error': 500,
-        'message': 'Internal server error'
+        'message': e.description
     }), 500

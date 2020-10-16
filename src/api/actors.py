@@ -1,3 +1,4 @@
+import sys
 
 from flask_sqlalchemy import SQLAlchemy
 from flask import Blueprint, jsonify, request, abort
@@ -15,7 +16,7 @@ bp = Blueprint('api_actors', __name__, url_prefix='/api')
 def get_actor(actor_id):
     actor = Actor.query.get(actor_id)
     if not actor:
-        abort(404)
+        abort(404, description='Actor not found')
     return jsonify(actor.format())
 
 
@@ -24,7 +25,7 @@ def get_actor(actor_id):
 def get_actors():
     actors = Actor.query.all()
     if not actors:
-        abort(404)
+        abort(404, 'No Actors added yet')
     return jsonify([actor.format() for actor in actors])
 
 
@@ -33,7 +34,7 @@ def get_actors():
 def delete_actor(actor_id):
     actor = Actor.query.get(actor_id)
     if not actor:
-        abort(404)
+        abort(404, 'Actor not found')
     try:
         actor.delete()
         return jsonify({
@@ -41,7 +42,8 @@ def delete_actor(actor_id):
         })
     except Exception:
         db.session.rollback()
-        abort(422)
+        print(sys.exc_info())
+        abort(422, 'Unprocessable request to remove Actor')
 
 
 @bp.route('/actors', methods=['POST'])
@@ -63,7 +65,8 @@ def post_actor():
         })
     except Exception:
         db.session.rollback()
-        abort(422)
+        print(sys.exc_info())
+        abort(422, 'Unprocessable request to add new Actor')
 
 
 @bp.route('/actors/<int:actor_id>', methods=['PATCH'])
@@ -72,7 +75,7 @@ def patch_actor(actor_id):
     patch_data = request.get_json()
     actor = Actor.query.get(actor_id)
     if not actor:
-        abort(404)
+        abort(404, 'Actor not found')
     try:
         actor.name = patch_data.get('name', actor.name)
         actor.age = patch_data.get('age', actor.age)
@@ -86,4 +89,5 @@ def patch_actor(actor_id):
         })
     except Exception:
         db.session.rollback()
-        abort(422)
+        print(sys.exc_info())
+        abort(422, 'Unprocessable request to update existing Actor')

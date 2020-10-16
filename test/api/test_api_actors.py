@@ -28,7 +28,7 @@ def test_get_actor_not_found(client, auth):
     assert res.status_code == 404
     assert data['success'] is False
     assert data['error'] == 404
-    assert data['message'] == 'Entity not found'
+    assert data['message'] == 'Actor not found'
 
 
 def test_get_actors(client, auth):
@@ -55,7 +55,7 @@ def test_get_actors_not_found(client, auth):
     assert isinstance(data, dict)
     assert data['success'] is False
     assert data['error'] == 404
-    assert data['message'] == 'Entity not found'
+    assert data['message'] == 'No Actors added yet'
 
 
 def test_delete_actor(client, auth):
@@ -78,7 +78,7 @@ def test_delete_actor_not_found(client, auth):
     assert isinstance(data, dict)
     assert data['success'] is False
     assert data['error'] == 404
-    assert data['message'] == 'Entity not found'
+    assert data['message'] == 'Actor not found'
 
 
 def test_post_actor_without_movies(client, auth):
@@ -136,7 +136,7 @@ def test_post_actor_unprocessable(client, auth):
     assert isinstance(data, dict)
     assert data['success'] is False
     assert data['error'] == 422
-    assert data['message'] == 'Unprocessable entity'
+    assert data['message'] == 'Unprocessable request to add new Actor'
 
 
 def test_patch_actor_with_name_age(client, auth):
@@ -185,4 +185,4 @@ def test_patch_actor_not_found(client, auth):
     assert isinstance(data, dict)
     assert data['success'] is False
     assert data['error'] == 404
-    assert data['message'] == 'Entity not found'
+    assert data['message'] == 'Actor not found'
