@@ -6,6 +6,8 @@ Casting Agency is an API to manage actors and movies data, including users authe
 - Authentication & Roles with Auth0 service + JWT (JSON Web Tokens).
 - API Unit tests with pytest & SQLite.
 
+[See project](https://bplusv-casting-agency.herokuapp.com)
+
 ## User Roles
 - Casting Assistant can view actors and movies data.
 - Casting Director can view actors and movies data, manage actors, and update existing movies.
